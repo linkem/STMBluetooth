@@ -118,7 +118,7 @@ public class MainActivity extends ActionBarActivity {
 
         mBtPattern1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { //TODO: wysh³aæ 1!
+            public void onClick(View v) { //TODO: wyshï¿½aï¿½ 1!
                 int pattern_pwm = mPatternSeekBar.getProgress();
 //                if(pattern_pwm < 50)
 //                    pattern_pwm /= 2;
@@ -272,6 +272,7 @@ public class MainActivity extends ActionBarActivity {
 //        }
 //    }
     public void list(View view) {
+        btWyszukaj.setEnabled(false);
         pairedDevices = mBA.getBondedDevices();
 
         mArrayAdapter.clear();
@@ -452,7 +453,7 @@ public class MainActivity extends ActionBarActivity {
                 try {
                    string = new String(buffer,"UTF-8");
                     //string = BaseEncoding.Base
-                }catch (Exception e1){Log.i("B³¹d danych wej", buffer.toString());}
+                }catch (Exception e1){Log.i("Bï¿½ï¿½d danych wej", buffer.toString());}
                // Toast.makeText(getApplicationContext(), "STM sends: " + string, Toast.LENGTH_SHORT).show();
                 Log.i("STM respond", bytes + " bajtow: " + buffer.toString()+"--" + string);
             }
