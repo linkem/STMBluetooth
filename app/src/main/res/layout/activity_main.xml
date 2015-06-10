@@ -1,0 +1,164 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/RedSeekBar"
+        android:layout_toLeftOf="@+id/RedSwitch"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Switch
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="R"
+        android:id="@+id/RedSwitch"
+        android:layout_alignParentRight="true"
+        android:showText="false" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/BlueSeekBar"
+        android:layout_below="@+id/RedSeekBar"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/BlueSwitch"/>
+    <Switch
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="B"
+        android:id="@+id/BlueSwitch"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/RedSwitch"
+        android:layout_alignParentRight="true"/>
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/OrangeSeekBar"
+        android:layout_below="@+id/BlueSeekBar"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/OrangeSwitch"
+        />
+    <Switch
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/OrangeSwitch"
+        android:text="O"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/BlueSwitch"/>
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/GreenSeekBar"
+        android:layout_toLeftOf="@+id/GreenSwitch"
+        android:layout_below="@+id/OrangeSeekBar"
+        android:layout_alignParentLeft="true"/>
+    <Switch
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/GreenSwitch"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/OrangeSwitch"
+        android:layout_alignParentRight="true"
+        android:text="G"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/GreenSeekBar"
+        android:layout_marginTop="10dp"
+        android:id="@+id/linearLayout">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pattern1"
+            android:text="Wzor 1"
+            android:layout_weight="1" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pattern2"
+            android:text="Wzor 2"
+            android:layout_weight="1"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pattern3"
+            android:text="Wzor 3"
+            android:layout_weight="1"/>
+        </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:id="@+id/linearLayout2">
+        <!--<Button-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/btWlacz"-->
+            <!--android:text="Włącz BT"-->
+            <!--android:layout_weight="1"-->
+
+            <!--/>-->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wyszukaj urzadzenie"
+            android:id="@+id/btWyszukaj"
+            android:onClick="list"
+            android:layout_weight="1.5"/>
+    </LinearLayout>
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/patternSeekBar"
+        android:layout_below="@id/linearLayout"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/linearLayout3"
+        android:layout_below="@+id/patternSeekBar"
+        android:layout_marginTop="10dp"
+        >
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btZatrzymaj"
+            android:text="Zatrzymaj Wzor"
+            android:layout_weight="1"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btWznow"
+            android:text="Wznow Wzor"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/listView"
+        android:layout_below="@+id/linearLayout3"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/linearLayout2"
+        />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_below="@+id/listView"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>
