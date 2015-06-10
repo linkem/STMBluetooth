@@ -115,8 +115,6 @@ public class MainActivity extends ActionBarActivity {
                 (this, android.R.layout.simple_list_item_1);
         lv.setAdapter(mArrayAdapter);
         //CONNECT TO DEFAULT MAC
-        BluetoothDevice dev = mBA.getRemoteDevice((String) getResources().getText(R.string.default_mac));
-        new BluetoothClient(dev).run();
 
         mBtPattern1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,7 +200,13 @@ public class MainActivity extends ActionBarActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
-        on(); // wlacza BT przy starcie aplikacji
+        if(!mBA.isEnabled()) // wlacza BT przy starcie aplikacji
+        {
+            mBA.enable();
+        }
+        BluetoothDevice dev = mBA.getRemoteDevice((String)
+                getResources().getText(R.string.default_mac)); //automatycznie laczy sie z domyslnym urzadzeniem
+        new BluetoothClient(dev).run();
 
     }
 
@@ -253,20 +257,20 @@ public class MainActivity extends ActionBarActivity {
         buttonView.setEnabled(true);
     }
 
-    public void on(){
-        if (!mBA.isEnabled()) {
-            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOn, 0);
-            Toast.makeText(getApplicationContext(), "Turning on Bluetooth"
-                    , Toast.LENGTH_LONG).show();
-          //  btTurnOn.setText("Wlacz BT");
-        }
-        else{
-            Toast.makeText(getApplicationContext(),"Bluetooth arleady on",
-                    Toast.LENGTH_LONG).show();
-           // btTurnOn.setText("Wylacz BT");
-        }
-    }
+//    public void on(){
+//        if (!mBA.isEnabled()) {
+//            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//            startActivityForResult(turnOn, 0);
+//            Toast.makeText(getApplicationContext(), "Turning on Bluetooth"
+//                    , Toast.LENGTH_LONG).show();
+//          //  btTurnOn.setText("Wlacz BT");
+//        }
+//        else{
+//            Toast.makeText(getApplicationContext(),"Bluetooth arleady on",
+//                    Toast.LENGTH_LONG).show();
+//           // btTurnOn.setText("Wylacz BT");
+//        }
+//    }
     public void list(View view) {
         pairedDevices = mBA.getBondedDevices();
 
