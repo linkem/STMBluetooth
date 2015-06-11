@@ -256,21 +256,6 @@ public class MainActivity extends ActionBarActivity {
         }
         buttonView.setEnabled(true);
     }
-
-//    public void on(){
-//        if (!mBA.isEnabled()) {
-//            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//            startActivityForResult(turnOn, 0);
-//            Toast.makeText(getApplicationContext(), "Turning on Bluetooth"
-//                    , Toast.LENGTH_LONG).show();
-//          //  btTurnOn.setText("Wlacz BT");
-//        }
-//        else{
-//            Toast.makeText(getApplicationContext(),"Bluetooth arleady on",
-//                    Toast.LENGTH_LONG).show();
-//           // btTurnOn.setText("Wylacz BT");
-//        }
-//    }
     public void list(View view) {
         pairedDevices = mBA.getBondedDevices();
 
@@ -318,11 +303,8 @@ public class MainActivity extends ActionBarActivity {
         private BluetoothDevice mmDevice;
 
         public BluetoothClient(BluetoothDevice device){
-            BluetoothSocket tmp = null;
             mmDevice = device;
             try{
-                UUID uuid = UUID.fromString("143c374b-404a-4427-bfe6-bef8613b50a0");
-             //   tmp = device.createInsecureRfcommSocketToServiceRecord(uuid);
                 mmSocket = (BluetoothSocket) device.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(device,1);
             }
             catch (Exception e){ }
@@ -331,16 +313,10 @@ public class MainActivity extends ActionBarActivity {
             mBA.cancelDiscovery();
             try {
                 mmSocket.connect();
-             //   Toast.makeText(getApplicationContext(), mmDevice.getAddress().toString(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "Conndected to: " + mmDevice.getName(),Toast.LENGTH_LONG).show();
-
-//                if(input == "RedSwitch")
-//                    mRedSwitch.setChecked(true);
-             //   manageConnectedSocket =  new ConnectedThread(socket);
                 Log.i("Log", "za mmSocket.connect");
             }catch (Exception e){
                 Log.i("Log", "exception mmSocket.connect: "+e.getMessage());
-              //  Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                 try{
                     mmSocket.close();
                 }catch (Exception el) {}
@@ -399,83 +375,63 @@ public class MainActivity extends ActionBarActivity {
             } catch (IOException e) { }
         }
     }
-    private class ConnectedThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
-
-        public ConnectedThread(BluetoothSocket socket) {
-            mmSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
-            // Get the input and output streams, using temp objects because
-            // member streams are final
-            try {
-                tmpIn = socket.getInputStream();
-                tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
-
-            mmInStream = tmpIn;
-            mmOutStream = tmpOut;
-        }
-
-        public void run() {
-            byte[] buffer = new byte[20];  // buffer store for the stream
-            int bytes; // bytes returned from read()
-            String string = "";
-
-            // Keep listening to the InputStream until an exception occurs
-            while (true) {
-                try {
-                    // Read from the InputStream
-
-                    bytes = mmInStream.read(buffer);
-                 //   mmInStream.read(buffer);
-                  //  String string =  new String(buffer);
-                   // string = Arrays.toString(buffer);
-
-                //    long a =  new BigInteger(buffer).longValue();
-//                    Log.i("STM respond", bytes + " bajtow: " + buffer.toString() + string);
-                    //mRedSwitch.setChecked(true);
-//                     Send the obtained bytes to the UI activity
-//                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-//                            .sendToTarget();
-                 //   if(buffer.toString() != null){
-                        //mRedSwitch.setChecked(true);
-                   //     Toast.makeText(getApplicationContext(), "Recived: " + buffer.toString(), Toast.LENGTH_LONG).show();
-                    //}
-
-                } catch (IOException e) {
-                    break;
-                }
-                try {
-                   string = new String(buffer,"UTF-8");
-                    //string = BaseEncoding.Base
-                }catch (Exception e1){Log.i("B³¹d danych wej", buffer.toString());}
-               // Toast.makeText(getApplicationContext(), "STM sends: " + string, Toast.LENGTH_SHORT).show();
-                Log.i("STM respond", bytes + " bajtow: " + buffer.toString()+"--" + string);
-            }
-        }
-
-        /* Call this from the main activity to send data to the remote device */
-        public void write(int message) { //TODO:
-            try {
-                mmOutStream.write(message);
-            } catch (IOException e) { }
-         //   String message2 = new String(msgBuffer);
-           //  Toast.makeText(getApplicationContext(), "Sending: " + message, Toast.LENGTH_LONG).show();
-            //Toast.makeText(getApplicationContext(), "Message Length: " + msgBuffer.length , Toast.LENGTH_LONG).show();
-
-        }
-
-        /* Call this from the main activity to shutdown the connection */
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) { }
-        }
-    }
+//    private class ConnectedThread extends Thread {
+//        private final BluetoothSocket mmSocket;
+//        private final InputStream mmInStream;
+//        private final OutputStream mmOutStream;
+//
+//        public ConnectedThread(BluetoothSocket socket) {
+//            mmSocket = socket;
+//            InputStream tmpIn = null;
+//            OutputStream tmpOut = null;
+//
+//            // Get the input and output streams, using temp objects because
+//            // member streams are final
+//            try {
+//                tmpIn = socket.getInputStream();
+//                tmpOut = socket.getOutputStream();
+//            } catch (IOException e) { }
+//
+//            mmInStream = tmpIn;
+//            mmOutStream = tmpOut;
+//        }
+//
+//        public void run() {
+//            byte[] buffer = new byte[20];  // buffer store for the stream
+//            int bytes; // bytes returned from read()
+//            String string = "";
+//            // Keep listening to the InputStream until an exception occurs
+//            while (true) {
+//                try {
+//                    // Read from the InputStream
+//                    bytes = mmInStream.read(buffer);
+//                } catch (IOException e) {
+//                    break;
+//                }
+//                try {
+//                   string = new String(buffer,"UTF-8");
+//                }catch (Exception e1){Log.i("B³¹d danych wej", buffer.toString());}
+//                Log.i("STM respond", bytes + " bajtow: " + buffer.toString()+"--" + string);
+//            }
+//        }
+//        /* Call this from the main activity to send data to the remote device */
+//        public void write(int message) { //TODO:
+//            try {
+//                mmOutStream.write(message);
+//            } catch (IOException e) { }
+//         //   String message2 = new String(msgBuffer);
+//           //  Toast.makeText(getApplicationContext(), "Sending: " + message, Toast.LENGTH_LONG).show();
+//            //Toast.makeText(getApplicationContext(), "Message Length: " + msgBuffer.length , Toast.LENGTH_LONG).show();
+//
+//        }
+//
+//        /* Call this from the main activity to shutdown the connection */
+//        public void cancel() {
+//            try {
+//                mmSocket.close();
+//            } catch (IOException e) { }
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
