@@ -42,9 +42,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity
+{
 
-    private Button btTurnOn,mBtPattern1, mBtPattern2, mBtPattern3,btZatrzymaj, btWznow,btWyszukaj;
+    private Button btTurnOn, mBtPattern1, mBtPattern2, mBtPattern3, btZatrzymaj, btWznow, btWyszukaj;
 
     private Switch mRedSwitch, mGreenSwitch, mBlueSwitch, mOrangeSwitch;
     private SeekBar mRedSeekBar, mGreenSeekBar, mBlueSeekBar, mOrangeSeekBar, mPatternSeekBar;
@@ -56,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList list;
     private ArrayAdapter mArrayAdapter;
     private ProgressBar pbLista;
-    public ConnectedThread manageConnectedSocket;
+    private ConnectedThread manageConnectedSocket;
 
     private final int GREEN_LED = 1;
     private final int ORANGE_LED = 2;
@@ -71,7 +72,8 @@ public class MainActivity extends ActionBarActivity {
     private final int PATTERN_RESUME = 10; //wznawia wykonywanie patternu
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -109,15 +111,17 @@ public class MainActivity extends ActionBarActivity {
 
 
         list = new ArrayList();
-        lv = (ListView)findViewById(R.id.listView);
+        lv = (ListView) findViewById(R.id.listView);
         mArrayAdapter = new ArrayAdapter
                 (this, android.R.layout.simple_list_item_1);
         lv.setAdapter(mArrayAdapter);
         //CONNECT TO DEFAULT MAC
 
-        mBtPattern1.setOnClickListener(new View.OnClickListener() {
+        mBtPattern1.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) { //TODO: wysh³aæ 1!
+            public void onClick(View v)
+            { //TODO: wysh³aæ 1!
                 int pattern_pwm = mPatternSeekBar.getProgress();
 //                if(pattern_pwm < 50)
 //                    pattern_pwm /= 2;
@@ -127,40 +131,50 @@ public class MainActivity extends ActionBarActivity {
                 patternOnDisableRest(true);
             }
         });
-        mBtPattern2.setOnClickListener(new View.OnClickListener() {
+        mBtPattern2.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 manageConnectedSocket.write(PATTERN_2);
                 manageConnectedSocket.write(mPatternSeekBar.getProgress());
                 patternOnDisableRest(true);
             }
         });
-        mBtPattern3.setOnClickListener(new View.OnClickListener() {
+        mBtPattern3.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 manageConnectedSocket.write(PATTERN_3);
                 manageConnectedSocket.write(mPatternSeekBar.getProgress());
                 patternOnDisableRest(true);
             }
         });
-        btZatrzymaj.setOnClickListener(new View.OnClickListener() {
+        btZatrzymaj.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 manageConnectedSocket.write(PATTERN_FINISH);
                 patternOnDisableRest(false);
             }
         });
-        btWznow.setOnClickListener(new View.OnClickListener() {
+        btWznow.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 manageConnectedSocket.write(PATTERN_RESUME);
             }
         });
 
         //CONNECT TO DEVICE FROM LIST
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
                 String listItem = lv.getItemAtPosition(position).toString();
                 String[] parts = listItem.split("\n");
                 String mac = parts[1];
@@ -169,27 +183,35 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        mRedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mRedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 LED_Switch(buttonView, isChecked, RED_LED, mRedSeekBar.getProgress());
             }
         });
-        mGreenSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mGreenSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 LED_Switch(buttonView, isChecked, GREEN_LED, mGreenSeekBar.getProgress());
             }
         });
-        mOrangeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mOrangeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 LED_Switch(buttonView, isChecked, ORANGE_LED, mOrangeSeekBar.getProgress());
             }
         });
-        mBlueSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mBlueSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 LED_Switch(buttonView, isChecked, BLUE_LED, mBlueSeekBar.getProgress());
             }
         });
@@ -199,7 +221,7 @@ public class MainActivity extends ActionBarActivity {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
 
-        if(!mBA.isEnabled()) // wlacza BT przy starcie aplikacji
+        if (!mBA.isEnabled()) // wlacza BT przy starcie aplikacji
         {
             mBA.enable();
         }
@@ -209,7 +231,8 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    private void patternOnDisableRest(boolean enableAll) {
+    private void patternOnDisableRest(boolean enableAll)
+    {
         enableAll = !enableAll;
         mRedSwitch.setEnabled(enableAll);
         mRedSeekBar.setEnabled(enableAll);
@@ -224,67 +247,83 @@ public class MainActivity extends ActionBarActivity {
         mOrangeSeekBar.setEnabled(enableAll);
     }
 
-    private void LED_Switch(CompoundButton buttonView, boolean isChecked, int mLED, int mPWM) {
+    private void LED_Switch(CompoundButton buttonView, boolean isChecked, int mLED, int mPWM)
+    {
         //TODO: wyslac info o zmianie switcha
-        if(isChecked && (mPWM != 0)) {
-            if(mPWM < 50)
+        if (isChecked && (mPWM != 0))
+        {
+            if (mPWM < 50)
                 mPWM /= 2;
-            try {
+            try
+            {
                 manageConnectedSocket.write(PWM_CHANGE);
                 manageConnectedSocket.write(mLED);
                 manageConnectedSocket.write(mPWM);
                 Toast.makeText(getApplicationContext(), "Turn On Green LED", Toast.LENGTH_SHORT).show();
                 buttonView.setChecked(true);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 buttonView.setChecked(false);
                 Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                 Log.i("blad wysylania", e.getMessage());
             }
-        }else if(mPWM >0 || !isChecked){
-            try {
+        } else if (mPWM > 0 || !isChecked)
+        {
+            try
+            {
                 manageConnectedSocket.write(mLED);
                 Toast.makeText(getApplicationContext(), "Turn Off Green LED", Toast.LENGTH_SHORT).show();
                 buttonView.setChecked(false);
-            }catch (Exception e){
+            } catch (Exception e)
+            {
                 buttonView.setChecked(true);
                 Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
                 Log.i("blad wysylania", e.getMessage());
             }
-        } else {
+        } else
+        {
             buttonView.setChecked(false);
         }
         buttonView.setEnabled(true);
     }
-    public void list(View view) {
+
+    public void list(View view)
+    {
         pairedDevices = mBA.getBondedDevices();
 
         mArrayAdapter.clear();
-        if (pairedDevices.size() > 0) {
+        if (pairedDevices.size() > 0)
+        {
             for (BluetoothDevice device : pairedDevices)
                 mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             Toast.makeText(getApplicationContext(), "Showing Paired Devices",
                     Toast.LENGTH_SHORT).show();
             lv.setAdapter(mArrayAdapter);
         }
-        if(!mBA.isDiscovering())
-            if(mBA.startDiscovery() == true)
-                Toast.makeText(getApplicationContext(),"Discovering Devices", Toast.LENGTH_LONG).show();
+        if (!mBA.isDiscovering())
+            if (mBA.startDiscovery() == true)
+                Toast.makeText(getApplicationContext(), "Discovering Devices", Toast.LENGTH_LONG).show();
 
     }
-    final private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
+
+    final private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
+        public void onReceive(Context context, Intent intent)
+        {
             String action = intent.getAction();
             btWyszukaj.setEnabled(false);
             pbLista.setVisibility(View.VISIBLE);
             // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+            if (BluetoothDevice.ACTION_FOUND.equals(action))
+            {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // Add the name and address to an array adapter to show in a ListView
                 mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             }
-            if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-                Toast.makeText(getApplicationContext(),"FINISHED", Toast.LENGTH_LONG).show();
+            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
+            {
+                Toast.makeText(getApplicationContext(), "FINISHED", Toast.LENGTH_LONG).show();
                 btWyszukaj.setEnabled(true);
                 pbLista.setVisibility(View.INVISIBLE);
 
@@ -292,118 +331,163 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
-    private class BluetoothClient extends Thread {
+    private class BluetoothClient extends Thread
+    {
         private BluetoothSocket mmSocket;
         private BluetoothDevice mmDevice;
 
-        public BluetoothClient(BluetoothDevice device){
+        public BluetoothClient(BluetoothDevice device)
+        {
             mmDevice = device;
-            try{
-                mmSocket = (BluetoothSocket) device.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(device,1);
+            try
+            {
+                mmSocket = (BluetoothSocket) device.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(device, 1);
+            } catch (Exception e)
+            {
             }
-            catch (Exception e){ }
         }
-        public void run() {
+
+        public void run()
+        {
             mBA.cancelDiscovery();
-            try {
+            try
+            {
                 mmSocket.connect();
-                Toast.makeText(getApplicationContext(), "Conndected to: " + mmDevice.getName(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Conndected to: " + mmDevice.getName(), Toast.LENGTH_LONG).show();
                 Log.i("Log", "za mmSocket.connect");
-            }catch (Exception e){
-                Log.i("Log", "exception mmSocket.connect: "+e.getMessage());
-                try{
+            } catch (Exception e)
+            {
+                Log.i("Log", "exception mmSocket.connect: " + e.getMessage());
+                try
+                {
                     mmSocket.close();
-                }catch (Exception el) {}
+                } catch (Exception el)
+                {
+                }
             }
             manageConnectedSocket = new ConnectedThread(mmSocket);
             manageConnectedSocket.start();
         }
-        public void cancel() {
-            try {
+
+        public void cancel()
+        {
+            try
+            {
                 mmSocket.close();
-            } catch (Exception e) { }
+            } catch (Exception e)
+            {
+            }
         }
 
     }
-     private class ConnectedThread extends Thread {
+
+    private class ConnectedThread extends Thread
+    {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
-        public ConnectedThread(BluetoothSocket socket) {
+        public ConnectedThread(BluetoothSocket socket)
+        {
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
             // Get the input and output streams, using temp objects because
             // member streams are final
-            try {
+            try
+            {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
+            } catch (IOException e)
+            {
+            }
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
         }
 
-        public void run() {
+        public void run()
+        {
             byte[] buffer = new byte[20];  // buffer store for the stream
             int bytes; // bytes returned from read()
             String string = "";
             // Keep listening to the InputStream until an exception occurs
-            while (true) {
-                try {
+            while (true)
+            {
+                try
+                {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
-                } catch (IOException e) {
+                } catch (IOException e)
+                {
                     break;
                 }
-                try {
-                   string = new String(buffer,"UTF-8");
-                }catch (Exception e1){Log.i("B³¹d danych wej", buffer.toString());}
-                Log.i("STM respond", bytes + " bajtow: " + buffer.toString()+"--" + string);
+                try
+                {
+                    string = new String(buffer, "UTF-8");
+                } catch (Exception e1)
+                {
+                    Log.i("B³¹d danych wej", buffer.toString());
+                }
+                Log.i("STM respond", bytes + " bajtow: " + buffer.toString() + "--" + string);
             }
         }
+
         /* Call this from the main activity to send data to the remote device */
-        public void write(int message) { //TODO:
-            try {
+        public void write(int message)
+        { //TODO:
+            try
+            {
                 mmOutStream.write(message);
-            } catch (IOException e) { }
+            } catch (IOException e)
+            {
+            }
         }
 
         /* Call this from the main activity to shutdown the connection */
-        public void cancel() {
-            try {
+        public void cancel()
+        {
+            try
+            {
                 mmSocket.close();
-            } catch (IOException e) { }
+            } catch (IOException e)
+            {
+            }
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_settings)
+        {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
-    protected void onDestroy(){
+    protected void onDestroy()
+    {
         super.onDestroy();
-        if(mBA != null){
+        if (mBA != null)
+        {
             mBA.cancelDiscovery();
         }
         this.unregisterReceiver(mReceiver);
