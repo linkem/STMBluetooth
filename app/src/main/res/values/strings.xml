@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">STMBluetooth</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="default_mac">30:14:12:26:09:26</string>
+    <string name="default_mac">30:14:12:26:03:87</string>
+    <string name="pattern1">WZOR 1</string>
+    <string name="pattern2">WZOR 2</string>
+    <string name="pattern3">WZOR 3</string>
+    <string name="hold">ZATRZYMAJ</string>
+    <string name="resume">WZNOW</string>
+    <string name="discover_devices">WYSZUKAJ URZEDZENIE</string>
+    <string name="reset">RESET</string>
+
 </resources>

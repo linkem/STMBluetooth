@@ -75,23 +75,26 @@
         android:layout_below="@+id/GreenSeekBar"
         android:layout_marginTop="10dp"
         android:id="@+id/linearLayout">
-        <Button
+        <ToggleButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pattern1"
-            android:text="Wzor 1"
+            android:textOn="@string/pattern1"
+            android:textOff="@string/pattern1"
             android:layout_weight="1" />
-        <Button
+        <ToggleButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pattern2"
-            android:text="Wzor 2"
+            android:textOff="@string/pattern2"
+            android:textOn="@string/pattern2"
             android:layout_weight="1"/>
-        <Button
+        <ToggleButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pattern3"
-            android:text="Wzor 3"
+            android:textOn="@string/pattern3"
+            android:textOff="@string/pattern3"
             android:layout_weight="1"/>
         </LinearLayout>
     <LinearLayout
@@ -100,14 +103,6 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:id="@+id/linearLayout2">
-        <!--<Button-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/btWlacz"-->
-            <!--android:text="Włącz BT"-->
-            <!--android:layout_weight="1"-->
-
-            <!--/>-->
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -133,25 +128,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/btZatrzymaj"
-            android:text="Zatrzymaj"
+            android:text="@string/hold"
             android:layout_weight="1"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/btWznow"
-            android:text="Wznow"
+            android:text="@string/resume"
             android:layout_weight="1"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Reset"
+            android:text="@string/reset"
             android:id="@+id/btReset"
             android:layout_weight="1"
             />
-
-
     </LinearLayout>
-
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -160,7 +152,6 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/linearLayout2"
         />
-
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
