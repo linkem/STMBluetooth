@@ -126,75 +126,68 @@ public class MainActivity extends ActionBarActivity {
             new BluetoothClient(dev).run();
         }
         // ------ INIT LISTA DOSTEPNYCH URZADZEN----
-       // list = new ArrayList();
         lv = (ListView) findViewById(R.id.listView);
         mArrayAdapter = new ArrayAdapter
                 (this, android.R.layout.simple_list_item_1);
         lv.setAdapter(mArrayAdapter);
         //--INIT LISTA DOSTEPNYCH URZADZEN--
 
+        mPatternSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (mBtPattern1.isChecked()) {
+                    turnOnPattern1();
+                } else if (mBtPattern2.isChecked()) {
+                    turnOnPattern2();
+                } else if (mBtPattern3.isChecked()) {
+                    turnOnPattern3();
+                }
+
+            }
+        });
+
         mBtPattern1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) //wlaczony
+                if (buttonView.isChecked()) //wlaczony
                 {
-                    manageConnectedSocket.write(PATTERN_1);
-                    manageConnectedSocket.write(mPatternSeekBar.getProgress());
-
-                    unCheckSwitches();
-                    disableSwitches(true);
-                    disableSeekBars(true);
-
-                    mBtPattern2.setChecked(false);
-                    mBtPattern3.setChecked(false);
-
+                    turnOnPattern1();
                 } else
                 {
                     manageConnectedSocket.write(PATTERN_HOLD);
-
                 }
             }
         });
         mBtPattern2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) //wlaczony
+                if (buttonView.isChecked()) //wlaczony
                 {
-                    manageConnectedSocket.write(PATTERN_2);
-                    manageConnectedSocket.write(mPatternSeekBar.getProgress());
-
-                    unCheckSwitches();
-                    disableSwitches(true);
-                    disableSeekBars(true);
-
-                    mBtPattern1.setChecked(false);
-                    mBtPattern3.setChecked(false);
-
+                    turnOnPattern2();
                 } else
                 {
                     manageConnectedSocket.write(PATTERN_HOLD);
-
                 }
             }
         });
         mBtPattern3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) //wlaczony
+                if (buttonView.isChecked()) //wlaczony
                 {
-                    manageConnectedSocket.write(PATTERN_3);
-                    manageConnectedSocket.write(mPatternSeekBar.getProgress());
-
-                    unCheckSwitches();
-                    disableSwitches(true);
-                    disableSeekBars(true);
-
-                    mBtPattern1.setChecked(false);
-                    mBtPattern2.setChecked(false);
-
+                    turnOnPattern3();
                 } else {
                     manageConnectedSocket.write(PATTERN_HOLD);
-
                 }
             }
         });
@@ -376,6 +369,42 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+    }
+
+    private void turnOnPattern3() {
+        manageConnectedSocket.write(PATTERN_3);
+        manageConnectedSocket.write(mPatternSeekBar.getProgress());
+
+        unCheckSwitches();
+        disableSwitches(true);
+        disableSeekBars(true);
+
+        mBtPattern1.setChecked(false);
+        mBtPattern2.setChecked(false);
+    }
+
+    private void turnOnPattern2() {
+        manageConnectedSocket.write(PATTERN_2);
+        manageConnectedSocket.write(mPatternSeekBar.getProgress());
+
+        unCheckSwitches();
+        disableSwitches(true);
+        disableSeekBars(true);
+
+        mBtPattern1.setChecked(false);
+        mBtPattern3.setChecked(false);
+    }
+
+    private void turnOnPattern1() {
+        manageConnectedSocket.write(PATTERN_1);
+        manageConnectedSocket.write(mPatternSeekBar.getProgress());
+
+        unCheckSwitches();
+        disableSwitches(true);
+        disableSeekBars(true);
+
+        mBtPattern2.setChecked(false);
+        mBtPattern3.setChecked(false);
     }
 
     private void unCheckPatternButtons() {
@@ -571,6 +600,7 @@ public class MainActivity extends ActionBarActivity {
             }
             manageConnectedSocket = new ConnectedThread(mmSocket);
             manageConnectedSocket.start();
+            manageConnectedSocket.write(RESET);
         }
 
         public void cancel() {
