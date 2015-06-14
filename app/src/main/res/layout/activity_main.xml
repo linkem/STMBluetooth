@@ -133,14 +133,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/btZatrzymaj"
-            android:text="Zatrzymaj Wzor"
+            android:text="Zatrzymaj"
             android:layout_weight="1"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/btWznow"
-            android:text="Wznow Wzor"
+            android:text="Wznow"
             android:layout_weight="1"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            android:id="@+id/btReset"
+            android:layout_weight="1"
+            />
+
 
     </LinearLayout>
 
