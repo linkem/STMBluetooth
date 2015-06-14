@@ -114,8 +114,6 @@ public class MainActivity extends ActionBarActivity {
         disableSwitches(true);
         //---/DISABLE ALL BUTTON TILL CONNECT TO DEVICE/
 
-
-
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
