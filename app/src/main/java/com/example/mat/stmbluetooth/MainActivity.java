@@ -2,16 +2,13 @@ package com.example.mat.stmbluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Looper;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -28,30 +24,26 @@ import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.annotation.Target;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-
+/**
+ * ***************************************************************************************
+ *
+ * @author Mateusz Linke, Politechnika Poznañska - Informatyka, Wydzia³ Elektryczny
+ * @version v1.0
+ * @file MainActivity.java
+ * @brief Podstawowa klasa aplikacji, uruchamiana w momencie uruchamiania aplikacji.
+ * ***************************************************************************************
+ */
 public class MainActivity extends ActionBarActivity {
 
-    private Button btZatrzymaj, btWznow, btWyszukaj, btReset;
-    private ToggleButton mBtPattern1, mBtPattern2, mBtPattern3;
-
-    private Switch mRedSwitch, mGreenSwitch, mBlueSwitch, mOrangeSwitch;
-    private SeekBar mRedSeekBar, mGreenSeekBar, mBlueSeekBar, mOrangeSeekBar, mPatternSeekBar;
-
+    private Button btZatrzymaj, btWznow, btWyszukaj, btReset; //Przyciski aplikacji
+    private ToggleButton mBtPattern1, mBtPattern2, mBtPattern3; //Przyciski aplickaji (ToggleButton)
+    private Switch mRedSwitch, mGreenSwitch, mBlueSwitch, mOrangeSwitch; //Prze³¹czniki od poszczególnych LED
+    private SeekBar mRedSeekBar, mGreenSeekBar, mBlueSeekBar, mOrangeSeekBar, mPatternSeekBar; //Suwaki od poszczególnych LED'ow oraz wzoru
     private BluetoothAdapter mBA;
     private Set<BluetoothDevice> pairedDevices;
     private ListView lv;
@@ -59,19 +51,19 @@ public class MainActivity extends ActionBarActivity {
     private ProgressBar pbLista;
     private ConnectedThread manageConnectedSocket;
 
-    private final int GREEN_LED = 1;
-    private final int ORANGE_LED = 2;
-    private final int RED_LED = 3;
-    private final int BLUE_LED = 4;
+    private final int GREEN_LED = 1; /// Sta³a oznaczaj¹ca diode zielona
+    private final int ORANGE_LED = 2;   //  Sta³a oznaczaj¹ca diode pomaranczowa
+    private final int RED_LED = 3;  //  Sta³a oznaczaj¹ca diode czerwona
+    private final int BLUE_LED = 4; //  Sta³a oznaczaj¹ca diode niebieska
+    private final int PWM_CHANGE = 5;   //  Sta³a oznaczaj¹ca w³¹czenie kontroli PWM
+    private final int PATTERN_1 = 6;    //  Sta³a oznaczaj¹ca w³¹czenie wzoru 1
+    private final int PATTERN_2 = 7;    //  Sta³a oznaczaj¹ca w³¹czenie wzoru 2
+    private final int PATTERN_3 = 8;    //  Sta³a oznaczaj¹ca w³¹czenie wzoru 3
+    private final int PATTERN_HOLD = 9; //  Sta³a oznaczaj¹ca wstrzymanie wzoru
+    private final int PATTERN_RESUME = 10;  // Sta³a oznaczaj¹ca wznowienie wzoru
+    private final int RESET = 11;   //  Sta³a oznaczaj¹ca reset modu³u STM
+    private final String TAG = "STMBluetooth: ";    //  Sta³a pomagaj¹ca w debugowaniu
 
-    private final int PWM_CHANGE = 5; //ktora dioda? % wypelnienia? 0-100
-    private final int PATTERN_1 = 6; //predkosc dzialania wzoru? 0-100
-    private final int PATTERN_2 = 7; //j.w
-    private final int PATTERN_3 = 8; //j.w
-    private final int PATTERN_HOLD = 9; //zatrzymuje wykonywanie patternu
-    private final int PATTERN_RESUME = 10; //wznawia wykonywanie patternu
-    private final int RESET = 11; //reset modulu
-    private final String TAG = "STMBluetooth: ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,66 +71,32 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         mBA = BluetoothAdapter.getDefaultAdapter();
-        pbLista = (ProgressBar) findViewById(R.id.progressBar);
-        pbLista.setVisibility(View.INVISIBLE); //wylacza progress bar wyszukiwania urzadzen
-
-        // ----BUTTON INIT ---
-        mBtPattern1 = (ToggleButton) findViewById(R.id.pattern1);
-        mBtPattern2 = (ToggleButton) findViewById(R.id.pattern2);
-        mBtPattern3 = (ToggleButton) findViewById(R.id.pattern3);
-
-        btWyszukaj = (Button) findViewById(R.id.btWyszukaj);
-        btWznow = (Button) findViewById(R.id.btWznow);
-        btZatrzymaj = (Button) findViewById(R.id.btZatrzymaj);
-        btReset = (Button) findViewById(R.id.btReset);
-        // ----/BUTTON INIT ---
-
-        // --- SWITCH INIT -----
-        mRedSwitch = (Switch) findViewById(R.id.RedSwitch);
-        mGreenSwitch = (Switch) findViewById(R.id.GreenSwitch);
-        mBlueSwitch = (Switch) findViewById(R.id.BlueSwitch);
-        mOrangeSwitch = (Switch) findViewById(R.id.OrangeSwitch);
-        //----/SWITCH INIT/ ----
-
-        //----SEEK BAR INIT -----
-        mRedSeekBar = (SeekBar) findViewById(R.id.RedSeekBar);
-        mGreenSeekBar = (SeekBar) findViewById(R.id.GreenSeekBar);
-        mBlueSeekBar = (SeekBar) findViewById(R.id.BlueSeekBar);
-        mOrangeSeekBar = (SeekBar) findViewById(R.id.OrangeSeekBar);
-        mPatternSeekBar = (SeekBar) findViewById(R.id.patternSeekBar);
-        //----/SEEK BAR INIT/ --- -
-
-        //---DISABLE ALL BUTTON TILL CONNECT TO DEVICE---
-        disablePatternButtons(true);
-        disableSeekBars(true);
-        disableSwitches(true);
-        //---/DISABLE ALL BUTTON TILL CONNECT TO DEVICE/
+        initialize_Interface();
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
 
-        if(mBA.isEnabled()) {
+        if (mBA.isEnabled()) {
             BluetoothDevice dev = mBA.getRemoteDevice((String)
                     getResources().getText(R.string.default_mac)); //automatycznie laczy sie z domyslnym urzadzeniem
             new BluetoothClient(dev).run();
         }
+
         // ------ INIT LISTA DOSTEPNYCH URZADZEN----
         lv = (ListView) findViewById(R.id.listView);
         mArrayAdapter = new ArrayAdapter
                 (this, android.R.layout.simple_list_item_1);
         lv.setAdapter(mArrayAdapter);
-        //--INIT LISTA DOSTEPNYCH URZADZEN--
+        //------INIT LISTA DOSTEPNYCH URZADZEN--
 
         mPatternSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
@@ -150,7 +108,6 @@ public class MainActivity extends ActionBarActivity {
                 } else if (mBtPattern3.isChecked()) {
                     turnOnPattern3();
                 }
-
             }
         });
 
@@ -160,8 +117,7 @@ public class MainActivity extends ActionBarActivity {
                 if (buttonView.isChecked()) //wlaczony
                 {
                     turnOnPattern1();
-                } else
-                {
+                } else {
                     manageConnectedSocket.write(PATTERN_HOLD);
                 }
             }
@@ -172,8 +128,7 @@ public class MainActivity extends ActionBarActivity {
                 if (buttonView.isChecked()) //wlaczony
                 {
                     turnOnPattern2();
-                } else
-                {
+                } else {
                     manageConnectedSocket.write(PATTERN_HOLD);
                 }
             }
@@ -319,54 +274,65 @@ public class MainActivity extends ActionBarActivity {
         mRedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if(isChecked == true)
-//                    mRedSeekBar.setEnabled(true);
-//                else
-//                    mRedSeekBar.setEnabled(false);
-//               int mPWM = mRedSeekBar.getProgress();
-//                if (isChecked)
-//                {
-//                    if (mPWM < 50)
-//                        mPWM /= 2;
-//                    try
-//                    {
-//                        manageConnectedSocket.write(PWM_CHANGE);
-//                        manageConnectedSocket.write(RED_LED);
-//                        manageConnectedSocket.write(mPWM);
-//                        Toast.makeText(getApplicationContext(), "Turn On LED", Toast.LENGTH_SHORT).show();
-//                        buttonView.setChecked(true);
-//                    } catch (Exception e)
-//                    {
-//                        buttonView.setChecked(false);
-//                        Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-//                        Log.i("blad wysylania", e.getMessage());
-//                    }
-//                }
-//                else
-//                    manageConnectedSocket.write(RED_LED);
-                // LED_Switch(buttonView, isChecked, RED_LED, mRedSeekBar.getProgress());
-                LED_Switch(buttonView, mRedSeekBar ,isChecked, RED_LED, mRedSeekBar.getProgress());
+                LED_Switch(buttonView, mRedSeekBar, isChecked, RED_LED, mRedSeekBar.getProgress());
             }
         });
         mGreenSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                LED_Switch(buttonView, mGreenSeekBar , isChecked, GREEN_LED, mGreenSeekBar.getProgress());
+                LED_Switch(buttonView, mGreenSeekBar, isChecked, GREEN_LED, mGreenSeekBar.getProgress());
             }
         });
         mOrangeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                LED_Switch(buttonView, mOrangeSeekBar , isChecked, ORANGE_LED, mOrangeSeekBar.getProgress());
+                LED_Switch(buttonView, mOrangeSeekBar, isChecked, ORANGE_LED, mOrangeSeekBar.getProgress());
             }
         });
         mBlueSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                LED_Switch(buttonView, mBlueSeekBar ,isChecked, BLUE_LED, mBlueSeekBar.getProgress());
+                LED_Switch(buttonView, mBlueSeekBar, isChecked, BLUE_LED, mBlueSeekBar.getProgress());
             }
         });
 
+    }
+
+    private void initialize_Interface() {
+        pbLista = (ProgressBar) findViewById(R.id.progressBar);
+        pbLista.setVisibility(View.INVISIBLE); //wylacza progress bar wyszukiwania urzadzen
+
+        // ----BUTTON INIT ---
+        mBtPattern1 = (ToggleButton) findViewById(R.id.pattern1);
+        mBtPattern2 = (ToggleButton) findViewById(R.id.pattern2);
+        mBtPattern3 = (ToggleButton) findViewById(R.id.pattern3);
+
+        btWyszukaj = (Button) findViewById(R.id.btWyszukaj);
+        btWznow = (Button) findViewById(R.id.btWznow);
+        btZatrzymaj = (Button) findViewById(R.id.btZatrzymaj);
+        btReset = (Button) findViewById(R.id.btReset);
+        // ----/BUTTON INIT ---
+
+        // --- SWITCH INIT -----
+        mRedSwitch = (Switch) findViewById(R.id.RedSwitch);
+        mGreenSwitch = (Switch) findViewById(R.id.GreenSwitch);
+        mBlueSwitch = (Switch) findViewById(R.id.BlueSwitch);
+        mOrangeSwitch = (Switch) findViewById(R.id.OrangeSwitch);
+        //----/SWITCH INIT/ ----
+
+        //----SEEK BAR INIT -----
+        mRedSeekBar = (SeekBar) findViewById(R.id.RedSeekBar);
+        mGreenSeekBar = (SeekBar) findViewById(R.id.GreenSeekBar);
+        mBlueSeekBar = (SeekBar) findViewById(R.id.BlueSeekBar);
+        mOrangeSeekBar = (SeekBar) findViewById(R.id.OrangeSeekBar);
+        mPatternSeekBar = (SeekBar) findViewById(R.id.patternSeekBar);
+        //----/SEEK BAR INIT/ --- -
+
+        //---DISABLE ALL BUTTON TILL CONNECT TO DEVICE---
+        disablePatternButtons(true);
+        disableSeekBars(true);
+        disableSwitches(true);
+        //---/DISABLE ALL BUTTON TILL CONNECT TO DEVICE/
     }
 
     private void turnOnPattern3() {
@@ -450,11 +416,9 @@ public class MainActivity extends ActionBarActivity {
         mPatternSeekBar.setEnabled(enableAll);
     }
 
-    private void LED_Switch(CompoundButton buttonView,SeekBar seekbar, boolean isChecked, int mLED, int mPWM) {
+    private void LED_Switch(CompoundButton buttonView, SeekBar seekbar, boolean isChecked, int mLED, int mPWM) {
         if (isChecked)
             seekbar.setEnabled(true);
-//        else
-//            mRedSeekBar.setEnabled(false);
         if (isChecked) {
             if (mPWM < 50)
                 mPWM /= 2;
@@ -470,62 +434,28 @@ public class MainActivity extends ActionBarActivity {
                 Log.i("blad wysylania", e.getMessage());
             }
         } else
-            manageConnectedSocket.write(mLED);
-
-//        //TODO: wyslac info o zmianie switcha
-//        if (isChecked && (mPWM != 0))
-//        {
-//            if (mPWM < 50)
-//                mPWM /= 2;
-//            try
-//            {
-//                manageConnectedSocket.write(PWM_CHANGE);
-//                manageConnectedSocket.write(mLED);
-//                manageConnectedSocket.write(mPWM);
-//                Toast.makeText(getApplicationContext(), "Turn On Green LED", Toast.LENGTH_SHORT).show();
-//                buttonView.setChecked(true);
-//            } catch (Exception e)
-//            {
-//                buttonView.setChecked(false);
-//                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-//                Log.i("blad wysylania", e.getMessage());
-//            }
-//        } else if (mPWM > 0 || !isChecked)
-//        {
-//            try
-//            {
-//                manageConnectedSocket.write(mLED);
-//                Toast.makeText(getApplicationContext(), "Turn Off Green LED", Toast.LENGTH_SHORT).show();
-//                buttonView.setChecked(false);
-//            } catch (Exception e)
-//            {
-//                buttonView.setChecked(true);
-//                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-//                Log.i("blad wysylania", e.getMessage());
-//            }
-//        } else
-//        {
-//            buttonView.setChecked(false);
-//        }
-//        buttonView.setEnabled(true);
-
+            switchOffLED(mLED);
     }
-    private void LED_Switch(int mLED, int mPWM)
-    {
+
+    private void LED_Switch(int mLED, int mPWM) {
         if (mPWM < 50)
             mPWM /= 2;
         try {
             manageConnectedSocket.write(PWM_CHANGE);
             manageConnectedSocket.write(mLED);
             manageConnectedSocket.write(mPWM);
-            Toast.makeText(getApplicationContext(), "Turn On LED", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
             Log.i("blad wysylania", e.getMessage());
         }
     }
 
-    private void switchOffLEDs(int mLED) {
+    /**
+     * @param mLED numer diody ktory ma zostac wylaczony
+     * @brief funkcja switchOffLEDs(int)
+     * wysyla zadanie wylaczenia konkretnej diody
+     */
+    private void switchOffLED(int mLED) {
         manageConnectedSocket.write(mLED);
     }
 
@@ -566,6 +496,10 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
+    /**
+     * @class BluetoothClient
+     * @brief Klasa odpowiedzialna za nawiazanie polaczenie z zadanym urzadzeniem
+     */
     private class BluetoothClient extends Thread {
         private BluetoothSocket mmSocket;
         private BluetoothDevice mmDevice;
@@ -610,28 +544,36 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * @class ConnectedThread(BluetoothSocket socket)
+     * Klasa odpowiedzialna za przesylanie i odbieranie danych przeslanych przez bluetooth
+     */
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
+        /**
+         * @param socket gniazdo do polaczonego urzedzenia
+         * @brief konstruktor klasy
+         */
         public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
-
-            // Get the input and output streams, using temp objects because
-            // member streams are final
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
             }
-
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
         }
 
+        /**
+         * @brief funkcja run()
+         * funkcja nasluchuje przychodzacych danych
+         */
         public void run() {
             byte[] buffer = new byte[20];  // buffer store for the stream
             int bytes; // bytes returned from read()
@@ -653,21 +595,30 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-        /* Call this from the main activity to send data to the remote device */
-        public void write(int message) { //TODO:
+        /**
+         * @param message przechowuje wiadomosc ktora ma zostac wyslana
+         * @brief write(int)
+         * Wysy³a dane do podlaczonego urzadzenia
+         */
+        public void write(int message) {
             try {
                 mmOutStream.write(message);
             } catch (IOException e) {
-                //  Log.i(TAG , e.getMessage());
+                Log.i(TAG, e.getMessage());
             }
         }
 
         /* Call this from the main activity to shutdown the connection */
+
+        /**
+         * @brief cancel()
+         * Konczy polaczenie
+         */
         public void cancel() {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                // Log.i(TAG , e.getMessage());
+                Log.i(TAG, e.getMessage());
             }
         }
     }
@@ -685,7 +636,6 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -694,19 +644,27 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    /**
+     * @brief onResume()
+     * Funkcja w³¹cza bluetooth w momencie uruchomienia aplikacji
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        if (!mBA.isEnabled()) // wlacza BT przy starcie aplikacji
-        {
-            mBA.enable();
-            Toast.makeText(getApplicationContext(), "Bluetooth Trun ON", Toast.LENGTH_SHORT).show();
+        if (mBA != null) {
+            if (!mBA.isEnabled()) // wlacza BT przy starcie aplikacji
+            {
+                mBA.enable();
+                Toast.makeText(getApplicationContext(), "Bluetooth Turn ON", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(getApplicationContext(), "Bluetooth Already ON", Toast.LENGTH_SHORT).show();
         }
-        else
-            Toast.makeText(getApplicationContext(), "Bluetooth Already ON", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * @brief onDestroy()
+     * Wywo³ywana w momencie wcisniecia przycisku "cofnij". Wy³¹cza Bluetooth i zamyka aplikacje.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
