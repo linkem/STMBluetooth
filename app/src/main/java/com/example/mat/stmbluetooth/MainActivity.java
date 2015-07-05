@@ -89,12 +89,12 @@ public class MainActivity extends ActionBarActivity {
         lv.setAdapter(mArrayAdapter);
         setPairedDevices(); // pokazuje na liscie sprarowane urzadzenia
         //------INIT LISTA DOSTEPNYCH URZADZEN--
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-//            mRedSwitch.setText("Red");
-//            mOrangeSwitch.setText("Orange");
-//            mBlueSwitch.setText("Blue");
-//            mGreenSwitch.setText("Green");
-//        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mRedSwitch.setText("Red");
+            mOrangeSwitch.setText("Orange");
+            mBlueSwitch.setText("Blue");
+            mGreenSwitch.setText("Green");
+        }
 
         mPatternSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -343,6 +343,7 @@ public class MainActivity extends ActionBarActivity {
         disablePatternButtons(true);
         disableSeekBars(true);
         disableSwitches(true);
+        btReset.setEnabled(false);
         //---/DISABLE ALL BUTTON TILL CONNECT TO DEVICE/
     }
 
@@ -534,6 +535,7 @@ public class MainActivity extends ActionBarActivity {
                 disablePatternButtons(false);   //
                 disableSeekBars(false);         // ENABLE ALL
                 disableSwitches(false);         //
+                btReset.setEnabled(true);       //
 
                 Log.i("Log", "za mmSocket.connect");
             } catch (Exception e) {
