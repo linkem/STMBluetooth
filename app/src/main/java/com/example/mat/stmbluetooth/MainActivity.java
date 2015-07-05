@@ -89,12 +89,12 @@ public class MainActivity extends ActionBarActivity {
         lv.setAdapter(mArrayAdapter);
         setPairedDevices(); // pokazuje na liscie sprarowane urzadzenia
         //------INIT LISTA DOSTEPNYCH URZADZEN--
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            mRedSwitch.setText("Red");
-            mOrangeSwitch.setText("Orange");
-            mBlueSwitch.setText("Blue");
-            mGreenSwitch.setText("Green");
-        }
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+//            mRedSwitch.setText("Red");
+//            mOrangeSwitch.setText("Orange");
+//            mBlueSwitch.setText("Blue");
+//            mGreenSwitch.setText("Green");
+//        }
 
         mPatternSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -602,7 +602,7 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     string = new String(buffer);
                 } catch (Exception e1) {
-                    Log.i("B³¹d danych wej", buffer.toString());
+                    Log.i("Blad danych wej", buffer.toString());
                 }
                 Log.i("STM respond", bytes + " bajtow: " + "--" + string);
             }
@@ -611,7 +611,7 @@ public class MainActivity extends ActionBarActivity {
         /**
          * @param message przechowuje wiadomosc ktora ma zostac wyslana
          * @brief write(int)
-         * Wysy³a dane do podlaczonego urzadzenia
+         * Wysyla dane do podlaczonego urzadzenia
          */
         public void write(int message) {
             try {
@@ -659,7 +659,7 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * @brief onResume()
-     * Funkcja w³¹cza bluetooth w momencie uruchomienia aplikacji
+     * Funkcja wlacza bluetooth w momencie uruchomienia aplikacji
      */
     @Override
     protected void onResume() {
@@ -676,7 +676,7 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * @brief onDestroy()
-     * Wywo³ywana w momencie wcisniecia przycisku "cofnij". Wy³¹cza Bluetooth i zamyka aplikacje.
+     * Wywo³ywana w momencie wcisniecia przycisku "cofnij". Wyl¹cza Bluetooth i zamyka aplikacje.
      */
     @Override
     protected void onDestroy() {
