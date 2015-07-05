@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +41,7 @@ import java.util.Set;
  */
 public class MainActivity extends ActionBarActivity {
 
-    private Button btZatrzymaj, btWznow, btWyszukaj, btReset; //Przyciski aplikacji
+    private Button btWyszukaj, btReset; //Przyciski aplikacji
     private ToggleButton mBtPattern1, mBtPattern2, mBtPattern3; //Przyciski aplickaji (ToggleButton)
     private Switch mRedSwitch, mGreenSwitch, mBlueSwitch, mOrangeSwitch; //Prze³¹czniki od poszczególnych LED
     private SeekBar mRedSeekBar, mGreenSeekBar, mBlueSeekBar, mOrangeSeekBar, mPatternSeekBar; //Suwaki od poszczególnych LED'ow oraz wzoru
@@ -50,6 +51,10 @@ public class MainActivity extends ActionBarActivity {
     private ArrayAdapter mArrayAdapter;
     private ProgressBar pbLista;
     private ConnectedThread manageConnectedSocket;
+
+    private boolean pattern_holded1 = false;
+    private boolean pattern_holded2 = false;
+    private boolean pattern_holded3 = false;
 
     private final int GREEN_LED = 1; /// Sta³a oznaczaj¹ca diode zielona
     private final int ORANGE_LED = 2;   //  Sta³a oznaczaj¹ca diode pomaranczowa
@@ -77,18 +82,19 @@ public class MainActivity extends ActionBarActivity {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
 
-        if (mBA.isEnabled()) {
-            BluetoothDevice dev = mBA.getRemoteDevice((String)
-                    getResources().getText(R.string.default_mac)); //automatycznie laczy sie z domyslnym urzadzeniem
-            new BluetoothClient(dev).run();
-        }
-
         // ------ INIT LISTA DOSTEPNYCH URZADZEN----
         lv = (ListView) findViewById(R.id.listView);
         mArrayAdapter = new ArrayAdapter
                 (this, android.R.layout.simple_list_item_1);
         lv.setAdapter(mArrayAdapter);
+        setPairedDevices(); // pokazuje na liscie sprarowane urzadzenia
         //------INIT LISTA DOSTEPNYCH URZADZEN--
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mRedSwitch.setText("Red");
+            mOrangeSwitch.setText("Orange");
+            mBlueSwitch.setText("Blue");
+            mGreenSwitch.setText("Green");
+        }
 
         mPatternSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -110,54 +116,61 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
+        mBtPattern1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean on = ((ToggleButton) view).isChecked();
+                pattern_holded2 = false;
+                pattern_holded3 = false;
+                if (on) //wlaczony
+                {
+                    if (pattern_holded1)
+                        manageConnectedSocket.write(PATTERN_RESUME);
+                    else
+                        turnOnPattern1();
+                    pattern_holded1 = true;
+                } else {
+                    manageConnectedSocket.write(PATTERN_HOLD);
+                }
+            }
+        });
+        mBtPattern2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean on = ((ToggleButton) view).isChecked();;
+                pattern_holded1 = false;
+                pattern_holded3 = false;
+                if (on) //wlaczony
+                {
+                    if(pattern_holded2)
+                        manageConnectedSocket.write(PATTERN_RESUME);
+                    else
+                        turnOnPattern2();
+                    pattern_holded2 = true;
+                } else {
+                    manageConnectedSocket.write(PATTERN_HOLD);
+                }
+            }
+        });
+        mBtPattern3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean on = ((ToggleButton) view).isChecked();
+                pattern_holded1 = false;
+                pattern_holded2 = false;
+                if (on) //wlaczony
+                {
+                    if(pattern_holded3)
+                        manageConnectedSocket.write(PATTERN_RESUME);
+                    else
+                        turnOnPattern3();
+                    pattern_holded3 = true;
+                } else {
+                    manageConnectedSocket.write(PATTERN_HOLD);
+                }
+            }
+        });
 
-        mBtPattern1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (buttonView.isChecked()) //wlaczony
-                {
-                    turnOnPattern1();
-                } else {
-                    manageConnectedSocket.write(PATTERN_HOLD);
-                }
-            }
-        });
-        mBtPattern2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (buttonView.isChecked()) //wlaczony
-                {
-                    turnOnPattern2();
-                } else {
-                    manageConnectedSocket.write(PATTERN_HOLD);
-                }
-            }
-        });
-        mBtPattern3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (buttonView.isChecked()) //wlaczony
-                {
-                    turnOnPattern3();
-                } else {
-                    manageConnectedSocket.write(PATTERN_HOLD);
-                }
-            }
-        });
-
-        btZatrzymaj.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                manageConnectedSocket.write(PATTERN_HOLD);
-                disableSwitches(false);
-            }
-        });
-        btWznow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                manageConnectedSocket.write(PATTERN_RESUME);
-            }
-        });
         btReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -308,8 +321,6 @@ public class MainActivity extends ActionBarActivity {
         mBtPattern3 = (ToggleButton) findViewById(R.id.pattern3);
 
         btWyszukaj = (Button) findViewById(R.id.btWyszukaj);
-        btWznow = (Button) findViewById(R.id.btWznow);
-        btZatrzymaj = (Button) findViewById(R.id.btZatrzymaj);
         btReset = (Button) findViewById(R.id.btReset);
         // ----/BUTTON INIT ---
 
@@ -407,9 +418,6 @@ public class MainActivity extends ActionBarActivity {
 
     private void disablePatternButtons(boolean enableAll) {
         enableAll = !enableAll;
-        btWznow.setEnabled(enableAll);
-        btReset.setEnabled(enableAll);
-        btZatrzymaj.setEnabled(enableAll);
         mBtPattern1.setEnabled(enableAll);
         mBtPattern2.setEnabled(enableAll);
         mBtPattern3.setEnabled(enableAll);
@@ -417,6 +425,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void LED_Switch(CompoundButton buttonView, SeekBar seekbar, boolean isChecked, int mLED, int mPWM) {
+        disablePatternButtons(true);
         if (isChecked)
             seekbar.setEnabled(true);
         if (isChecked) {
@@ -438,6 +447,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void LED_Switch(int mLED, int mPWM) {
+        disablePatternButtons(true);
         if (mPWM < 50)
             mPWM /= 2;
         try {
@@ -456,21 +466,24 @@ public class MainActivity extends ActionBarActivity {
      * wysyla zadanie wylaczenia konkretnej diody
      */
     private void switchOffLED(int mLED) {
+        disablePatternButtons(true);
         manageConnectedSocket.write(mLED);
     }
 
-    public void list(View view) {
+    public void setPairedDevices(){
         pairedDevices = mBA.getBondedDevices();
-        btWyszukaj.setEnabled(false);
-        pbLista.setVisibility(View.VISIBLE);
-        mArrayAdapter.clear();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices)
                 mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-            Toast.makeText(getApplicationContext(), "Showing Paired Devices",
-                    Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(getApplicationContext(), "Showing Paired Devices",
+          //          Toast.LENGTH_SHORT).show();
             lv.setAdapter(mArrayAdapter);
         }
+    }
+    public void list(View view) {
+        btWyszukaj.setEnabled(false);
+        pbLista.setVisibility(View.VISIBLE);
+        mArrayAdapter.clear();
         if (!mBA.isDiscovering())
             if (mBA.startDiscovery() == true)
                 Toast.makeText(getApplicationContext(), "Discovering Devices", Toast.LENGTH_LONG).show();
