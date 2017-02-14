@@ -1,2 +1,2 @@
 # STMBluetooth
-Aplikacja do sterowania mikrokontolerem STM32, komunikacja odbya sie poprzez moduł Bluetooth.
+Applications on the Android platform, the application use Bluetooth to communicate with the microcontroller STM32.
